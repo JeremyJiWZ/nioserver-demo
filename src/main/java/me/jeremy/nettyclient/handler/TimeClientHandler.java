@@ -5,6 +5,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * @author hzjiwenzhong
+ */
 public class TimeClientHandler extends ChannelHandlerAdapter {
     private final ByteBuf msg;
 
@@ -14,10 +17,14 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
         msg.writeBytes(req);
     }
 
+    //write message to server
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.writeAndFlush(msg);
     }
+
+    //read message from server
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
