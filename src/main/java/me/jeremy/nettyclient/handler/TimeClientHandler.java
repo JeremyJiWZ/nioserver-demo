@@ -9,30 +9,33 @@ import io.netty.channel.ChannelHandlerContext;
  * @author hzjiwenzhong
  */
 public class TimeClientHandler extends ChannelHandlerAdapter {
-    private final ByteBuf msg;
+
+    private final byte[] req;
+
+    private int counter;
 
     public TimeClientHandler() {
-        byte[] req = "GET TIME ".getBytes();
-        msg = Unpooled.buffer(req.length);
-        msg.writeBytes(req);
+        req = ("GET TIME " + System.getProperty("line.separator")).getBytes();
     }
 
     //write message to server
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.writeAndFlush(msg);
+        ByteBuf message = null;
+        for (int i = 0; i < 100; ++i) {
+            message = Unpooled.buffer(req.length);
+            message.writeBytes(req);
+            ctx.writeAndFlush(message);
+        }
     }
 
     //read message from server
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] resp = new byte[buf.readableBytes()];
-        buf.readBytes(resp);
-        String currentTime = new String(resp, "UTF-8");
-        System.out.println(currentTime);
+        String currentTime = (String) msg;
+        System.out.println(currentTime + "; the counter is: " + ++counter);
     }
 
     @Override

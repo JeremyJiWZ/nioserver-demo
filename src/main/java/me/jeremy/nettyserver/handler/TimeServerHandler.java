@@ -11,17 +11,15 @@ import io.netty.channel.ChannelHandlerContext;
  * @author hzjiwenzhong
  */
 public class TimeServerHandler extends ChannelHandlerAdapter {
+    private int counter;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] req = new byte[buf.readableBytes()];
-        buf.readBytes(req);
-        String content = new String(req, "UTF-8");
-        System.out.println("order : " + content);
-        String currentTime = new Date().toString();
+        String content = (String) msg;
+        System.out.println("get order : " + content + "; the counter is: " + ++counter);
+        String currentTime = new Date().toString() + System.getProperty("line.separator");
         ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes());
-        ctx.write(resp);
+        ctx.writeAndFlush(resp);
     }
 
     @Override
